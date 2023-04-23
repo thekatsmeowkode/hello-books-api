@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, abort, make_response
 
 # hello_world_bp = Blueprint("hello_world", __name__)
 books_bp = Blueprint("books", __name__, url_prefix="/books")
@@ -28,6 +28,18 @@ books = [Book(1, "Made Up Book", "Most excellent review and description."),
          Book(2, "Great Book", "A Book on greatness, by the greatest"),
          Book(3, "Best of books, worst of books", "It was the best of books and the worst of books.")]
 
+def validate_book(book_id):
+    try:
+        book_id = int(book_id)
+    except:
+        abort(make_response({"message":f"book {book_id} invalid"}, 400))
+
+    for book in books:
+        if book.id == book_id:
+            return book
+
+    abort(make_response({"message":f"book {book_id} not found"}, 404))
+
 @books_bp.route("", methods=["GET"])
 def handle_books():
     books_response = []
@@ -38,3 +50,12 @@ def handle_books():
             "description": book.description
         })
     return jsonify(books_response)
+
+@books_bp.route("/<book_id>", methods=["GET"])
+def handle_book(book_id):
+    book = validate_book(book_id)
+    return {
+                "id": book.id,
+                "title": book.title,
+                "description": book.description
+            }
