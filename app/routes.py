@@ -60,22 +60,19 @@ def validate_book(book_id):
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
     book = validate_book(book_id)
-    return {
-                "id": book.id,
-                "title": book.title,
-                "description": book.description
-            }
+    return book.to_dict()
 
-@books_bp.route('', methods=["GET"])
+@books_bp.route("", methods=["GET"])
 def read_all_books():
-    books = Book.query.all()
+    title_query = request.args.get("title")
+    if title_query:
+        books = Book.query.filter_by(title=title_query)
+    else:
+        books = Book.query.all()
+
     books_response = []
     for book in books:
-            books_response.append({
-                "id": book.id,
-                "title": book.title,
-                "description": book.description
-            })
+        books_response.append(book.to_dict())
     return jsonify(books_response)
     
 @books_bp.route('', methods=["POST"])
