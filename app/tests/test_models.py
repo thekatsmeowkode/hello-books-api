@@ -1,5 +1,5 @@
 from app.models.book import Book
-from app.routes import validate_model
+from app.book_routes import validate_model
 import pytest
 
 def test_to_dict_no_missing_data():
