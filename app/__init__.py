@@ -30,7 +30,11 @@ def create_app(test_config=None):
     from .author_routes import authors_bp
     app.register_blueprint(authors_bp)
     
+    from .genre_routes import genres_bp
+    
     from app.models.book import Book
     from app.models.author import Author
+    from app.models.genre import Genre
+    from app.models.book_genre import BookGenre
     
     return app
